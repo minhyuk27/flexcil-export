@@ -7,7 +7,7 @@
 #     공유 폴더 주인(mknas)으로 맞춰 써서 PC(SMB)에서 기존 폴더와 똑같이 보이게 한다
 #  4) 상태를 Flexcil_백업/_마지막동기화.txt 에 기록 (언제 마지막으로 성공했는지 눈으로 확인)
 set -o pipefail
-export LC_ALL=C.UTF-8
+export LC_ALL=C.UTF-8 TZ=Asia/Seoul    # 상태·로그 시각을 한국 시간으로
 H="$HOME/flexcil"; APP="$H/app"; RAW="$H/raw"; OUT="$H/out"; LOG="$H/logs/sync.log"
 REMOTE="gdrive:${FLEXCIL_REMOTE_DIR:-$(cat "$H/remote_dir" 2>/dev/null)}"
 SHARE="/srv/nas"; OWNER="mknas"
