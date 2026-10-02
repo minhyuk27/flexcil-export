@@ -1,6 +1,6 @@
 #!/bin/bash
 # Flexcil 동기화 — NAS 서버(nas-server, ubuntu 계정)에서 실행. cron 10분마다, 수동은 odroid의 `flexcil-sync`
-#  1) 구글 드라이브 Flexcil 동기화 폴더 → ~/flexcil/raw     (rclone, 읽기 전용 권한)
+#  1) 구글 드라이브 Flexcil 동기화 폴더 → ~/flexcil/raw     (rclone, 서비스 계정·폴더 하나만 뷰어 공유)
 #  2) raw → ~/flexcil/out : 앱과 같은 폴더 구조의 필기 PDF   (바뀐 문서만 변환)
 #  3) out → /srv/nas/Flexcil/              (앱과 완전히 동일, 지운·바뀐 파일은 백업으로)
 #     raw → /srv/nas/Flexcil_백업/원본/     (.flx 원본 사본)
@@ -9,7 +9,7 @@
 set -o pipefail
 export LC_ALL=C.UTF-8 TZ=Asia/Seoul    # 상태·로그 시각을 한국 시간으로
 H="$HOME/flexcil"; APP="$H/app"; RAW="$H/raw"; OUT="$H/out"; LOG="$H/logs/sync.log"
-REMOTE="gdrive:${FLEXCIL_REMOTE_DIR:-$(cat "$H/remote_dir" 2>/dev/null)}"
+REMOTE="${FLEXCIL_REMOTE:-$(cat "$H/remote" 2>/dev/null)}"   # 예: flexsa: (서비스 계정, Flexcil Sync 폴더만 공유받음)
 SHARE="/srv/nas"; OWNER="mknas"
 NAS="$SHARE/Flexcil"; BAK="$SHARE/Flexcil_백업"
 TS=$(date '+%Y-%m-%d_%H%M%S')
@@ -21,7 +21,7 @@ status(){ printf '%s\n' "$@" | sudo -n tee "$BAK/_마지막동기화.txt" >/dev/
 put(){ sudo -n rsync -rt --chown="$OWNER:$OWNER" --chmod=Du=rwx,Dgo=rx,Fu=rw,Fgo=r "$@"; }
 fail(){ log "실패: $*"; status "마지막 시도: $(date '+%F %T') — 실패: $*" "마지막 성공: $(cat "$H/last_ok" 2>/dev/null || echo 없음)"; exit 1; }
 
-[ "$REMOTE" = "gdrive:" ] && fail "Flexcil 드라이브 폴더 미설정(~/flexcil/remote_dir)"
+[ -z "$REMOTE" ] && fail "드라이브 연결 미설정(~/flexcil/remote)"
 sudo -n install -d -o "$OWNER" -g "$OWNER" "$NAS" "$BAK" "$BAK/원본" || fail "공유 폴더 준비(sudo)"
 log "시작 ($REMOTE)"
 "$HOME/.local/bin/rclone" sync "$REMOTE" "$RAW" --backup-dir "$H/raw_history/$TS" --drive-acknowledge-abuse \
