@@ -7,6 +7,7 @@ Flexcil Export는 태블릿 필기 앱인 Flexcil의 독자적 바이너리 형�
 ## 1. 프로젝트 개요 (Overview)
 
 - **배경**: 모바일 태블릿(Galaxy Tab 등)에서 작성된 필기 문서는 Flexcil 전용 확장자(`.flx`)로 저장되어 데스크톱 PC나 타 기기에서 직접 열람하기 어렵고, 수동 PDF 내보내기는 번거로운 문제가 존재
+- **개발 형태**: 1인 단독 설계 및 파이프라인 개발 (기여도 100%)
 - **해결책**:
   1. 태블릿이 구글 드라이브로 자동 백업한 `.flx` 파일을 Linux 서버가 10분 주기로 자동 감지
   2. 내용이 변경된 문서만 선별(Delta-only)하여 서버에서 백그라운드로 PDF 렌더링
@@ -72,3 +73,26 @@ flexcil-export/
    - 개인 구글 계정 전체 권한이 아닌, 특정 `Flexcil Sync` 폴더만 뷰어로 공유받은 전용 GCP 서비스 계정 키를 사용하여 보안 사고 방지
 3. **무중단 멱등성(Idempotency) 보장**:
    - 네트워크 오류나 프로세스 강제 중단 시에도 파일 깨짐이 없도록 임시 디렉토리에서 변환 완료 후 원자적 교체(Atomic Move) 수행
+
+---
+
+## 6. 빠른 시작 (Quickstart)
+
+```bash
+# 저장소 복제
+git clone https://github.com/minhyuk27/flexcil-export.git
+cd flexcil-export
+
+# 의존성 설치
+pip install PyMuPDF
+
+# 단일 .flx 문서 변환 테스트
+python3 flx2pdf.py sample.flx output.pdf
+```
+
+---
+
+## 7. 라이선스 (License)
+
+본 프로젝트는 [MIT License](LICENSE)를 따릅니다.
+

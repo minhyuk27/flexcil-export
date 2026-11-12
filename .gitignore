@@ -1,1 +1,14 @@
 __pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+.env
+.env.*
+!.env.example
+*.flx
+*.pdf
+raw/
+out/
+logs/
+.claude/
